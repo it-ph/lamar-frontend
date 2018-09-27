@@ -1,0 +1,68 @@
+<nav class="navbar navbar-expand-lg fixed-top">
+  <a class="navbar-brand" [routerLink]="['/']" >Lamar</a>
+  <button class="navbar-toggler" type="button" (click)="toggleSidebar()">
+        <i class="fa fa-bars text-muted" aria-hidden="true"></i>
+    </button>
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown" dropdown >
+                <a href="javascript:void(0)"  class="nav-link dropdown-toggle" dropdownToggle>
+                    <i class="fa fa-user"></i> {{user.name}}
+                </a>
+                <div class="dropdown-menu-right dropdown-menu custom-dropdown" *dropdownMenu>
+                    <a class="dropdown-item" href="javascript:void(0)" (click)="showChangeForm()">
+                        <i class="fa fa-fw fa-gear"></i> Change Password
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0)" (click)="onLoggedOut()">
+                        <i class="fa fa-fw fa-power-off"></i> Log Out
+                    </a>
+                </div>
+            </li>
+        </ul>
+  </div>
+
+</nav>
+
+<div bsModal #change_password="bs-modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Change Password</h4>
+                <button type="button" class="close" aria-label="Close" (click)="change_password.hide()" >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="changeForm" (ngSubmit)="changePassword()">
+                <div class="modal-body">
+                    <div>
+                        <strong>New Password </strong> 
+                        <span class="text-error text-danger"
+                              [ngClass]="{'has-error':!changeForm.controls['newPassword'].valid && changeForm.controls['newPassword'].touched}" > *Password must be at least 8 characters, one upper case, one lower case, a number, and a special character</span>
+                    </div>
+                    <input type="password" 
+                           name="new-password" 
+                           class="form-control" 
+                           autocomplete="off"
+                           [formControl]="changeForm.controls['newPassword']">
+                    <div>
+                        <strong>Confirm Password </strong>
+                        <span class="text-error text-danger"
+                        [ngClass]="{'has-error': !changeForm.controls['confirmPassword'].valid && changeForm.controls['confirmPassword'].touched}" > *Passwords mismatched</span>
+              
+                    </div>
+                    
+                    <input type="password" 
+                           name="confirm-password" 
+                           class="form-control" 
+                           autocomplete="off"
+                           [formControl]="changeForm.controls['confirmPassword']">
+                    <div class="text-center text-danger">{{error}}</div>
+                    </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-custom">Submit</button>
+                    <button type="button" class="btn btn-custom"  (click)="change_password.hide()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>

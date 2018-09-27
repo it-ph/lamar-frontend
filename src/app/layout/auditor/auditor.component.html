@@ -1,0 +1,15 @@
+<app-header></app-header>
+  <nav class="sidebar" [ngClass]="{sidebarPushRight: isActive}">
+    <div class="list-group">
+      <a routerLink="/auditor/auditor-ready" class="list-group-item" routerLinkActive="active-link">
+        Auditor Ready
+      </a>
+      <a routerLink="/auditor/audited-ads" class="list-group-item" routerLinkActive="active-link">
+        My Ads
+      </a>
+    </div>
+  </nav>
+  
+    <section class="main-container">
+      <router-outlet></router-outlet> 
+  </section>

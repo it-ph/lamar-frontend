@@ -1,0 +1,29 @@
+.search-form{
+    margin-bottom: 10px;
+}
+
+.search-form.small{
+    width: 472px;
+}
+.search-value{
+    display: inline-block;
+    width: 112px;
+}
+
+.search-label{
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.search-field{
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: bolder;
+    margin-right: 10px;
+}
+.search-footer{
+    text-align: right;
+}
+
+

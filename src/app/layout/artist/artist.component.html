@@ -1,0 +1,12 @@
+<app-header></app-header>
+  <nav class="sidebar" [ngClass]="{sidebarPushRight: isActive}">
+    <div class="list-group">
+      <a routerLink="/artist" class="list-group-item" routerLinkActive="active-link">
+        Dashboard
+      </a>
+    </div>
+  </nav>
+  
+    <section class="main-container">
+      <router-outlet></router-outlet> 
+  </section>

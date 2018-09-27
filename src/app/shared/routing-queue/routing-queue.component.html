@@ -1,0 +1,187 @@
+
+<div class="q-container">
+    <div class="q-header">Routing Queue
+        <span class="pull-right" *ngIf="canImport">
+            <i class="fa fa-gear fa-fw custom clickable" 
+               tooltip="click to import files for multiple entries routing"
+               placement="top"
+               (click)="showImportModal()"
+            >
+                
+            </i>
+            
+            <i class="fa fa-plus fa-fw custom clickable"
+                tooltip="click to add single entry routing"
+                placement="top"
+            ></i>
+        </span>
+    </div>
+    <ul class="q-body" *ngIf ="routings?.length > 0">
+        <li class="q-element dropdown" dropdown *ngFor ="let adAssignment of routings">
+        
+          <span class="text-success">#{{adAssignment.ad.orderNumber}}</span>
+          <div class="divider"></div>
+          <div>
+              <i class="fa fa-fw fa-file custom clickable" 
+                 (click)="viewDetails(adAssignment.ad)"
+                 tooltip="click to view order details"
+                 placement="right"
+                >
+              </i>
+              <i class="fa fa-fw fa-hand-rock-o custom clickable"
+                 (click)="pick(adAssignment)"
+                 tooltip="click to pick"
+                 placement="right"
+                 *ngIf="isPickable(adAssignment)"
+                 >
+              </i>
+          </div>  
+        </li>
+    </ul>
+  </div>
+
+  
+<div bsModal #order_detail="bs-modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Order Details</h4>
+                <button type="button" class="close" aria-label="Close" (click)="order_detail.hide()" >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <div>
+                  <strong>Order #</strong>
+               </div>
+               <div class="form-control">{{selectedAd.orderNumber}}</div>
+               <div>
+                  <strong>Ad Type</strong>
+               </div>
+               <div class="form-control">{{selectedAd.adType}}</div>
+               <div>
+                  <strong>Advertiser</strong>
+               </div>
+               <div class="form-control">{{selectedAd.advertiser}}</div>
+               <div>
+                  <strong>Levels</strong>
+               </div>
+               <div class="form-control">{{selectedAd.levels}}</div>
+               <div>
+                  <strong>Substrate</strong>
+               </div>
+               <div class="form-control">{{selectedAd.substrate}}</div>
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-custom"  (click)="order_detail.hide()">Ok</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div bsModal #order_import="bs-modal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Import</h4>
+                    <button type="button" class="close" aria-label="Close" (click)="order_import.hide()" >
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form (ngSubmit)="importFile()">
+                    <div class="modal-body">
+                        <input type="file"
+                               name="file"
+                               #uploadEl (change)="onFileChange($event)">
+                        <div *ngIf="importResponse">
+                            <div class="table">
+                                <table class="table-bordered table-hover">
+                                        <thead>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Control #</th>
+                                            <th>Size</th>
+                                            <th>Substrate</th>
+                                            <th>Level</th>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let adAssignment of importResponse">
+                                                <td>{{adAssignment.ad.adDate | date}}</td>
+                                                <td>{{adAssignment.ad.adType}}</td>
+                                                <td>{{adAssignment.ad.orderNumber}}</td>
+                                                <td>{{adAssignment.ad.adSize}}</td>  
+                                                <td>{{adAssignment.ad.substrate}}</td>
+                                                <td>{{adAssignment.ad.levels}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                <br>
+                                <div class="text-danger">{{importError}}</div>
+                            </div>
+                        
+                        </div>
+                    </div>
+                    <div class="modal-footer">    
+                        <button type="submit" class="btn btn-custom" *ngIf="importResponse">Submit</button>
+                        <button type="button" class="btn btn-custom"  (click)="order_import.hide()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+  <div bsModal #assign_member="bs-modal" class="modal fade">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Assign Members for Order <span class="text-success">#{{selectedRouting.ad?.orderNumber}}</span> </h4>
+                  <button type="button" class="close" aria-label="Close" (click)="assign_member.hide()" >
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <form (ngSubmit)="assignMembers()">
+                  <div class="modal-body">
+                      <div><strong>Artist</strong></div>
+                      <ng-select [items]="artists"
+                                [ngModelOptions]="{standalone: true}"
+                                placeholder="Select Artist"
+                                [searchFn]="searchUser"
+                                [(ngModel)]="selectedRouting.artist">
+    
+                          <ng-template ng-label-tmp ng-option-tmp let-item="item">
+                                  {{item.name}} 
+                          </ng-template>
+                      </ng-select>
+                      <div><strong>DP</strong></div>
+                      <ng-select [items]="dps"
+                                [ngModelOptions]="{standalone: true}"
+                                placeholder="Select DP"
+                                [searchFn]="searchUser"
+                                [(ngModel)]="selectedRouting.dp">
+    
+                          <ng-template ng-label-tmp ng-option-tmp let-item="item">
+                                  {{item.name}} 
+                          </ng-template>
+                      </ng-select>
+    
+                      <div><strong>QA</strong></div>
+                      <ng-select [items]="qas"
+                                [ngModelOptions]="{standalone: true}"
+                                placeholder="Select QA"
+                                [searchFn]="searchUser"
+                                [(ngModel)]="selectedRouting.qa">
+    
+                          <ng-template ng-label-tmp ng-option-tmp let-item="item">
+                                  {{item.name}} 
+                          </ng-template>
+                      </ng-select>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="submit" class="btn btn-custom" >Ok</button>
+                      <button type="button" class="btn btn-custom"  (click)="assign_member.hide()">Cancel</button>
+                  </div>
+              </form>
+              
+          </div>
+      </div>
+    </div>

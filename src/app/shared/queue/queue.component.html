@@ -1,0 +1,68 @@
+
+<div class="q-container dp-q">
+  <div class="q-header">{{queue.name}}</div>
+  <ul class="q-body" *ngIf="queue.ads?.length > 0">
+      <li class="q-element dropdown" dropdown *ngFor ="let adAssignment of queue.ads">
+        <span class="dropdown-toggle" dropdownToggle> #{{adAssignment.ad.orderNumber}}</span>
+        <ul *dropdownMenu class="dropdown-menu">
+            <li class="menuitem" (click)="viewDetails(adAssignment)">
+                <a class="dropdown-item" href="javascript:void(0)" >
+                    <i class="fa fa-fw fa-file text-success" ></i> view details
+                </a>
+            </li>
+            <li class="menuitem" (click)="approve(adAssignment)">
+                <a class="dropdown-item" href="javascript:void(0)" >
+                    <i class="fa fa-fw fa-check text-success" ></i> approve
+                </a>
+            </li>
+            <li class="menuitem" (click)="showRejectRemarksModal(adAssignment)">
+                <a class="dropdown-item" href="javascript:void(0)" >
+                    <i class="fa fa-fw fa-times text-danger" ></i> reject
+                </a>
+            </li>
+          </ul>
+      </li>
+  </ul>
+</div>
+
+<div bsModal #details="bs-modal" class="modal fade"  style="text-align:left;">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Ad Details</h4>
+            <button type="button" class="close" aria-label="Close" (click)="details.hide()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div>Content</div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-custom">Save</button>
+          <button type="button" class="btn btn-custom" (click)="details.hide()" >Close</button>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div bsModal #reject_modal="bs-modal" class="modal fade"  style="text-align:left;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+              <h4 class="modal-title">Rejection Remarks</h4>
+              <button type="button" class="close" aria-label="Close" (click)="reject_modal.hide()">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <form>
+            <div class="modal-body">
+                <div>Content</div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-custom">Save</button>
+                <button type="button" class="btn btn-custom" (click)="reject_modal.hide()" >Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>

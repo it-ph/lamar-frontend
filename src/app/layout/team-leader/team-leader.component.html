@@ -1,0 +1,21 @@
+<app-header></app-header>
+<nav class="sidebar" [ngClass]="{sidebarPushRight: isActive}">
+  <div class="list-group">
+    <a routerLink="/team-leader" class="list-group-item" routerLinkActive="active-link">
+        Dashboard
+    </a>
+      <a routerLink="/team-leader/ads" class="list-group-item" routerLinkActive="active-link">
+        Ads
+    </a>
+    <a routerLink="/team-leader/dispatched-ads" class="list-group-item" routerLinkActive="active-link">
+        Dispatched Ads
+    </a>
+    <a routerLink="/team-leader/reports" class="list-group-item" routerLinkActive="active-link">
+      Reports
+    </a>
+  </div>
+</nav>
+
+  <section class="main-container">
+    <router-outlet></router-outlet> 
+</section>

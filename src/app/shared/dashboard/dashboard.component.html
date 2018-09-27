@@ -1,0 +1,15 @@
+
+<h3>Dashboard</h3>
+<hr>
+<!-- <button (click)="sendMessage()" *ngIf="wsConnected">test send</button>
+<textarea name="msg" id="" cols="30" rows="10" [(ngModel)]="testMessage"></textarea>
+<div class="form-control">{{thread}}</div> -->
+<div class="q-main-container">
+
+  <app-dev-queue (onUpdate)="onQueueUpdate($event)"></app-dev-queue>
+  <app-dp-queue  (onUpdate)="onQueueUpdate($event)"></app-dp-queue>
+  <app-qa-queue  (onUpdate)="onQueueUpdate($event)"></app-qa-queue>
+  <app-completed (onUpdate)="onQueueUpdate($event)">
+</app-completed>
+  
+</div>

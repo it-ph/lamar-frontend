@@ -1,0 +1,180 @@
+<h3>Reports</h3>
+<hr>
+
+<div class="row">
+  <div class="col-lg-12">
+      <div class="card">
+          <div class="card-header"> <h5>Dispatched Ads</h5></div>
+          <div class="card-body">
+            <form (ngSubmit) ="searchDispatchedAds()"> 
+                <div class="search-form">
+                    <div class="search-field">
+                        <div class="search-label">From</div>
+                        <div class="search-value">
+                            <input  class="form-control" 
+                                    name ="dispatchDate"
+                                    bsDatepicker
+                                    [(ngModel)]="dispatchStart"
+                                    readonly/>
+                          </div>
+                        
+                    </div>
+                    <div class="search-field">
+                        <div class="search-label">To</div>
+                        <div class="search-value">
+                            <input  class="form-control" 
+                                    name ="dispatchDate"
+                                    bsDatepicker
+                                    [(ngModel)]="dispatchEnd"
+                                    readonly/>
+                          </div>
+                        
+                    </div><button type="submit" class="btn btn-custom"><i class="fa fa-search"></i> Search</button>
+                  </div>
+              </form>
+              <div class="table-responsive" *ngIf="dispatchResultCurrentList?.length; else empty_dispatch">
+                  <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>Control #</th>
+                      <th>Advertiser</th>
+                      <th>Substrate</th>
+                      <th>Levels</th>
+                      <th>Processed By</th>
+                      <th>Creativity</th>
+                      <th>Accuracy</th>
+                      <th>Adjustment</th>
+                      <th>Notes</th>
+                      <th>Artist</th>
+                      <th>DP</th>
+                      <th>QA</th>
+                      <th>Completed</th>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let ad of dispatchResultCurrentList">
+                        <td>{{ad.adDate | date: 'MMM d, yyyy'}}</td>
+                        <td>{{ad.adType}}</td>
+                        <td>{{ad.orderNumber}}</td>
+                        <td>{{ad.advertiser}}</td>
+                        <td>{{ad.substrate}}</td>
+                        <td>{{ad.levels}}</td>
+                        <td>{{ad.auditor}}</td>
+                        <td>{{ad.creativity}}</td>
+                        <td>{{ad.accuracy}}</td>
+                        <td>{{ad.adjustments}}</td>
+                        <td>{{ad.notes}}</td>
+                        <td>{{ad?.members[0].user}}</td>
+                        <td>{{ad?.members[1].user}}</td>
+                        <td>{{ad?.members[2].user}}</td>
+                        <td>{{ad.dateCompleted | date}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br>
+                  <pagination 
+                            [totalItems]="dispatchResult?.length"
+                            [(ngModel)]="dispatchResultPage"
+                            [maxSize]="5"
+                            class="pagination-md"
+                            [itemsPerPage] ="dispatchResultItemsPerPage"
+                            (pageChanged)="dispatchPageChanged($event)"
+                            [boundaryLinks]="true"
+                            [rotate]="false" >
+                  </pagination>
+                  <div class="pull-right">
+                    <button class="btn btn-custom" (click)="downloadDispatch()">
+                        <i class="fa fa-download"></i> download
+                    </button>
+                </div>
+              </div>
+              <ng-template #empty_dispatch>
+                <div [style.width]="'100%'" [style.padding]="'0 15px'">
+                    Nothing to show
+                </div>
+              </ng-template>
+          </div>
+      </div>
+      <br>
+      <br>
+      <div class="card">
+          <div class="card-header"> <h5>Report Summary</h5></div>
+          <div class="card-body">
+              <form (ngSubmit) ="searchSummary()"> 
+                  <div class="search-form">
+                      <div class="search-field">
+                          <div class="search-label">From</div>
+                          <div class="search-value">
+                              <input  class="form-control" 
+                                      name ="summaryStart"
+                                      bsDatepicker
+                                      [(ngModel)]="summaryStart"
+                                      readonly/>
+                            </div>
+                          
+                      </div>
+                      <div class="search-field">
+                          <div class="search-label">To</div>
+                          <div class="search-value">
+                              <input  class="form-control" 
+                                      name ="summaryEnd"
+                                      bsDatepicker
+                                      [(ngModel)]="summaryEnd"
+                                      readonly/>
+                            </div>
+                          
+                      </div>
+                      <button type="submit" class="btn btn-custom"><i class="fa fa-search"></i> Search</button>
+                    </div>
+                </form>
+              <div class="table table-responsive" *ngIf="summaryResult?.length; else empty_summary">
+                  <table class="table-bordered table-hover table-striped">
+                    <thead>
+                      <th>Control #</th>
+                      <th>Member</th>
+                      <th>Role</th>
+                      <th>Date Started</th>
+                      <th>Date Ended</th>
+                      <th>Status</th>
+                      <th>Remarks</th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor ="let su of summaryResultCurrentList">
+                          <td>{{su.orderNumber}}</td>
+                          <td>{{su.name}}</td>
+                          <td>{{su.role}}</td>
+                          <td>{{su.start | date: 'MMM d, yyyy h:mm:ss a'}}</td>
+                          <td>{{su.end | date: 'MMM d, yyyy h:mm:ss a'}}</td>
+                          <td>{{su.status == null? 'ON GOING' : su.status}}</td>
+                          <td>{{su.remarks}}</td>
+                        </tr>
+                    </tbody>
+                  </table>
+                  <br>
+                  <pagination 
+                            [totalItems]="summaryResult?.length"
+                            [(ngModel)]="summaryResultPage"
+                            [maxSize]="5"
+                            class="pagination-md"
+                            [itemsPerPage] ="summaryResultItemsPerPage"
+                            (pageChanged)="summaryPageChanged($event)"
+                            [boundaryLinks]="true"
+                            [rotate]="false" >
+                  </pagination>
+                  <div class="pull-right">
+                        <button class="btn btn-custom" (click)="downloadSummary()">
+                            <i class="fa fa-download"></i> download
+                        </button>
+                  </div>
+              </div>
+            
+              <ng-template #empty_summary>
+                <div [style.width]="'100%'" [style.padding]="'0 15px'">
+                    Nothing to show
+                </div>
+              </ng-template>
+          </div>
+      </div>
+  </div>
+
+</div>

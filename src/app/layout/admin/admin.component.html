@@ -1,0 +1,16 @@
+<app-header></app-header>
+<nav class="sidebar" [ngClass]="{sidebarPushRight: isActive}">
+    
+<div class="list-group">
+    <a routerLink="/admin" class="list-group-item" routerLinkActive="active-link">
+    Dashboard
+    </a>
+    <a routerLink="/admin/users" class="list-group-item" routerLinkActive="active-link">
+    Users
+    </a>
+</div>
+</nav>
+
+<section class="main-container">
+    <router-outlet></router-outlet> 
+</section>

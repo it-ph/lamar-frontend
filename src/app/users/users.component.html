@@ -1,0 +1,183 @@
+<div class="row">
+  <div class="col-lg-12">
+      <div class="num-page">Show
+          <select (change) ="onNumPageSelect($event)" class="num-entries">
+            <option *ngFor="let s of numPageSelection" value="{{s}}"> {{s}}</option>
+          </select>
+          Entries
+      </div>
+    <div class="search-input">
+        <div class="form-group input-group">
+            <input type="text"
+                class="form-control"
+                name ="search_keyword"
+                placeholder="search..."
+                (keyup)="filterList()"
+                [(ngModel)] ="search_keyword" />
+            <div class="input-group-append">
+                <button class="btn btn-custom" type="button"><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="pull-right">
+      <button class="btn btn-custom" (click)="showAddForm()"> <i class="fa fa-plus"></i> New User</button>
+    </div>
+  </div>
+  <div class="col-lg-12">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+          <thead>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Status</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of currentPageList" [ngClass]="{'text-danger': !user.enabled}">
+              <td class="dropdown" dropdown [style.cursor]="'pointer'" >
+                <span  class="dropdown-toggle" dropdownToggle>{{user.name}}</span>
+                <div class="dropdown-menu custom-dropdown" *dropdownMenu>
+                    <a class="dropdown-item text-success" href="javascript:void(0)" *ngIf="!user.enabled" (click)="enableUser(user)">
+                        <i class="fa fa-fw fa-check"></i> enable
+                    </a>
+                    <a class="dropdown-item text-danger" href="javascript:void(0)" *ngIf="user.enabled" (click)="disableUser(user)">
+                        <i class="fa fa-fw fa-times"></i> disable
+                    </a>
+                    <a class="dropdown-item text-warning" href="javascript:void(0)" *ngIf="user.enabled" (click)="showChangePassForm(user)">
+                        <i class="fa fa-fw fa-lock"></i> change password
+                    </a>
+                </div> 
+              </td>
+              <td>{{user.username}}</td>
+              <td>{{user.role.role}}</td>
+              <td>{{user.enabled ? 'enabled' :'disabled'}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination [totalItems]="filteredList?.length"
+                    [(ngModel)]="currentPage"
+                    [maxSize]="5"
+                    class="pagination-md"
+                    [itemsPerPage] ="itemsPerPage"
+                    (pageChanged)="pageChange($event)"
+                    [boundaryLinks]="true"
+                    [rotate]="false" >
+        </pagination>
+      </div>
+  </div>
+</div>
+
+<div bsModal #add_user="bs-modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add User</h4>
+                <button type="button" class="close" aria-label="Close" (click)="add_user.hide()" >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="newUserForm" (ngSubmit)="addUser()">
+                <div class="modal-body">
+                    <div>
+                        <strong>Full name </strong> 
+                        <span class="text-error text-danger"
+                              [ngClass]="{'has-error':!newUserForm.controls['name'].valid && newUserForm.controls['name'].touched}" > *This is required</span>
+                    </div>
+                    <input type="text" 
+                           class="form-control" 
+                           [formControl]="newUserForm.controls['name']">
+                    <br>
+                    <div>
+                        <strong>Username </strong> 
+                        <span class="text-error text-danger"
+                              [ngClass]="{'has-error':!newUserForm.controls['username'].valid && newUserForm.controls['username'].touched}" > *This is required</span>
+                    </div>
+                     <input type="text" 
+                              class="form-control" 
+                              [formControl]="newUserForm.controls['username']">
+                    <br>
+                    <div>
+                        <strong>Role </strong> 
+                        <span class="text-error text-danger"
+                              [ngClass]="{'has-error':!newUserForm.controls['role'].valid && newUserForm.controls['role'].touched}" > *This is required</span>
+                    </div>
+                      <select name="role" id="role" class="form-control" [formControl]="newUserForm.controls['role']">
+                        <option value="{{role.id}}" *ngFor="let role of roles">{{role.role}}</option>
+                      </select>
+                    <div>
+                        <strong>New Password </strong> 
+                        <span class="text-error text-danger"
+                              [ngClass]="{'has-error':!newUserForm.controls['newPassword'].valid && newUserForm.controls['newPassword'].touched}" > *Password must be at least 8 characters, one upper case, one lower case, a number, and a special character</span>
+                    </div>
+                    <input type="password" 
+                           name="password" 
+                           class="form-control" 
+                           [formControl]="newUserForm.controls['newPassword']">
+                           
+                    <br>
+                    <div>
+                        <strong>Confirm Password </strong>
+                        <span class="text-error text-danger"
+                        [ngClass]="{'has-error': !newUserForm.controls['confirmPassword'].valid && newUserForm.controls['confirmPassword'].touched}" > *Passwords mismatched</span>
+              
+                    </div>
+                    
+                    <input type="password" 
+                           name="password" 
+                           class="form-control" 
+                           [formControl]="newUserForm.controls['confirmPassword']">
+                    <div class="text-center text-danger">{{error}}</div>
+                    </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-custom">Submit</button>
+                    <button type="button" class="btn btn-custom"  (click)="add_user.hide()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>
+
+  
+<div bsModal #change_pass_modal="bs-modal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Change Password</h4>
+                    <button type="button" class="close" aria-label="Close" (click)="change_pass_modal.hide()" >
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form [formGroup]="changePassForm" (ngSubmit)="changePassword()">
+                    <div class="modal-body">
+                        <div>
+                            <strong>New Password </strong> 
+                            <span class="text-error text-danger"
+                                  [ngClass]="{'has-error':!changePassForm.controls['newPassword'].valid && changePassForm.controls['newPassword'].touched}" > *Password must be at least 8 characters, one upper case, one lower case, a number, and a special character</span>
+                        </div>
+                        <input type="password" 
+                               name="new-password" 
+                               class="form-control"
+                               autocomplete="off" 
+                               [formControl]="changePassForm.controls['newPassword']">
+                        <div>
+                            <strong>Confirm Password </strong>
+                            <span class="text-error text-danger"
+                            [ngClass]="{'has-error': !changePassForm.controls['confirmPassword'].valid && changePassForm.controls['confirmPassword'].touched}" > *Passwords mismatched</span>
+                  
+                        </div>
+                        
+                        <input type="password" 
+                               name="confirm-password" 
+                               class="form-control" 
+                               autocomplete="off" 
+                               [formControl]="changePassForm.controls['confirmPassword']">
+                        <div class="text-center text-danger">{{error}}</div>
+                        </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-custom" [disabled]="!changePassForm.valid">Submit</button>
+                        <button type="button" class="btn btn-custom"  (click)="change_pass_modal.hide()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+      </div>

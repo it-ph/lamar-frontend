@@ -1,0 +1,120 @@
+<div class="row">
+  <div class="col-lg-12">
+      <div class="num-page">Show
+          <select (change) ="onNumPageSelect($event)" class="num-entries">
+            <option *ngFor="let s of numPageSelection" value="{{s}}"> {{s}}</option>
+          </select>
+          Entries
+      </div>
+    <div class="search-input">
+        <div class="form-group input-group">
+            <input type="text"
+                class="form-control"
+                name ="search_keyword"
+                placeholder="search..."
+                (keyup)="filterList()"
+                [(ngModel)] ="search_keyword" />
+            <div class="input-group-append">
+                <button class="btn btn-custom" type="button"><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="col-lg-12">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-stripe">
+          <thead>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Control #</th>
+            <th>Advertiser</th>
+            <th>Size</th>
+            <th>Substrate</th>
+            <th>Levels</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ad of currentPageList">
+              <td class="dropdown" dropdown [style.cursor]="'pointer'">
+                <span class="dropdown-toggle" dropdownToggle>{{ad.adDate | date}}</span>
+                <div class="dropdown-menu custom-dropdown" *dropdownMenu>
+                    <a class="dropdown-item text-success" href="javascript:void(0)" (click)="showAuditModal(ad)">
+                      <i class="fa fa-pencil"></i> audit
+                    </a>
+                </div>
+              </td>
+              <td>{{ad.adType}}</td>
+              <td>{{ad.orderNumber}}</td>
+              <td>{{ad.advertiser}}</td>
+              <td>{{ad.adSize}}</td>
+              <td>{{ad.substrate}}</td>
+              <td>{{ad.levels}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination [totalItems]="filteredList?.length"
+                    [(ngModel)]="currentPage"
+                    [maxSize]="5"
+                    class="pagination-md"
+                    [itemsPerPage] ="itemsPerPage"
+                    (pageChanged)="pageChange($event)"
+                    [boundaryLinks]="true"
+                    [rotate]="false" >
+        </pagination>
+      </div>
+  </div>
+</div>
+
+<div bsModal #audit_modal="bs-modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Audit Details</h4>
+                <button type="button" class="close" aria-label="Close" (click)="audit_modal.hide()" >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form  (ngSubmit)="auditAd()">
+                <div class="modal-body">
+                   <div><strong>Creative A-F</strong></div>
+                   <input type="text" class="form-control" [(ngModel)]="auditInfo.creativity" name="creativity">
+                   <div><strong>Accuracy A-F</strong></div>
+                   <input type="text" class="form-control" [(ngModel)]="auditInfo.accuracy" name="accuracy">
+                   <div><strong>Adjustments</strong></div>
+                   <select name="adjustment" id="adjustment" class="form-control" [(ngModel)]="auditInfo.adjustments" name="adjustments">
+                     <option value="None">None</option>
+                     <option value="Minor">Minor</option>
+                     <option value="Major">Major</option>
+                     <option value="Overhaul">Overhaul</option>
+                     <option value="N/A">N/A</option>
+                   </select>
+                   <div><strong>Time (mins)</strong></div>
+                   <input type="text" class="form-control" [(ngModel)]="auditInfo.time" name="time">
+                   <div><strong>Additional Notes</strong></div>
+                   <textarea name="notes"
+                             id="notes" 
+                             cols="30" 
+                             rows="5" 
+                             [(ngModel)]="auditInfo.notes"
+                             class="form-control">
+
+                   </textarea>
+                   <div><strong>Levels</strong></div>
+                   <select name="levels" 
+                           id="levels" 
+                           class="form-control" 
+                           [(ngModel)]="auditInfo.levels">
+                     <option value="Level 1">Level 1</option>
+                     <option value="Level 2A">Level 2A</option>
+                     <option value="Level 2B">Level 2B</option>
+                     <option value="Level 3">Level 3</option>
+                     <option value="B Version">B Version</option>
+                   </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-custom">Submit</button>
+                    <button type="button" class="btn btn-custom"  (click)="audit_modal.hide()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>

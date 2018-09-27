@@ -1,0 +1,227 @@
+<div class="q-container" >
+    <div class="q-header">Artist Queue</div>
+    <ul class="q-body"  *ngIf ="ads?.length > 0">
+        <li class="q-element" *ngFor ="let routing of ads" [ngClass]="{'started':routing.taskHistory.length === 0}">
+      
+          <span class="text-success"> #{{routing.orderNumber}}</span>
+            <div class="divider"></div>
+            <div *ngIf="!loading">
+                <i class="fa fa-fw fa-file custom clickable" 
+                   (click)="viewDetails(routing)"
+                   tooltip="click to view order details"
+                   placement="right"
+                  >
+                </i>
+                <i class="fa fa-fw fa-gear custom clickable" 
+                    tooltip="click to re-assign members"
+                    placement="right"
+                    (click) = "showAssignModal(routing)"
+                    *ngIf="canAssign(routing)">
+                </i>
+                
+                <i class="fa fa-fw fa-history custom clickable"
+                   (click)="viewStatus(routing)"
+                   tooltip="click to view history"
+                   placement="right"
+                   >
+                </i>
+                <i class="fa fa-fw fa-play custom clickable" 
+                   tooltip="click to start task"
+                   placement="right"
+                   (click) ="startTask(routing)"
+                   *ngIf ="canStart(routing)">
+                </i>
+                <i class="fa fa-fw fa-check custom clickable" 
+                    tooltip="click to approve ad"
+                    placement="right" 
+                    *ngIf="canApprove(routing)"
+                    (click)="approveTask(routing)">
+                </i>
+
+            </div>
+        </li>
+    </ul>
+  </div>
+
+  <div bsModal #order_detail="bs-modal" class="modal fade">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Order Details</h4>
+                  <button type="button" class="close" aria-label="Close" (click)="order_detail.hide()" >
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-field">
+                    <div>
+                        <strong>Control #</strong>
+                     </div>
+                     <div class="form-control">{{selectedAd.orderNumber}}</div>
+                </div>
+                <div class="form-field">
+                    <div>
+                        <strong>Ad Type</strong>
+                     </div>
+                     <div class="form-control">{{selectedAd.adType}}</div>
+                </div>
+                <div class="form-field">
+                    <div>
+                        <strong>Advertiser</strong>
+                     </div>
+                     <div class="form-control">{{selectedAd.advertiser}}</div>
+                </div>
+                <div class="form-field">
+                  <div>
+                      <strong>Levels</strong>
+                    </div>
+                    <div class="form-control">{{selectedAd.levels}}</div>
+                </div>
+                
+                <div class="form-field">
+                   
+                 <div>
+                    <strong>Substrate</strong>
+                 </div>
+                 <div class="form-control">{{selectedAd.substrate}}</div>
+                 
+                </div>
+
+        
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-custom"  (click)="order_detail.hide()">Ok</button>
+              </div>
+          </div>
+      </div>
+    </div>
+    </div>
+
+    <div bsModal #order_status="bs-modal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Task History</h4>
+                    <button type="button" class="close" aria-label="Close" (click)="order_status.hide()" >
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div >
+                        <table class="table table-hover table-bordered table-striped">
+                            <thead>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor ="let history of taskHistory">
+                                    <td>{{history.name}}</td>
+                                    <td>{{history.role}}</td>
+                                    <td>{{history.start | date :'MMM d, yyyy h:mm:ss a'}}</td>
+                                    <td>{{history.end | date :'MMM d, yyyy h:mm:ss a'}}</td>
+                                    <td>{{history.status == null? 'ON GOING' : history.status}}</td>
+                                    <td>{{history.remarks}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                  
+  
+                  
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom"  (click)="order_status.hide()">Ok</button>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div bsModal #order_query="bs-modal" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Order Query for <span>#{{queryOrder.ad?.orderNumber}}</span></h4>
+                        <button type="button" class="close" aria-label="Close" (click)="order_query.hide()" >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form (ngSubmit)="addQuery()">
+                        <div class="modal-body">
+                            <div>
+                                <strong>Reason</strong>
+                            </div>
+                            <textarea name="query" 
+                                      id="query" 
+                                      cols="30" 
+                                      rows="10"  
+                                      class="form-control"
+                                      [(ngModel)]="adQuery.query"></textarea>
+                        
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-custom">Submit</button>
+                            <button type="button" class="btn btn-custom"  (click)="order_query.hide()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+          </div>
+
+          <div bsModal #members_modal="bs-modal" class="modal fade">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Assign Members for <span>#{{selectedAd.orderNumber}}</span></h4>
+                            <button type="button" class="close" aria-label="Close" (click)="members_modal.hide()" >
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form  [formGroup]="memberForm" (ngSubmit)="assignMembers()">
+                            <div class="modal-body">
+                                <div class="form-field">
+                                    <div>
+                                        <strong>Artist </strong>
+                                        <span class="text-error text-danger"
+                                             [ngClass]="{'has-error':!memberForm.controls['artist'].valid && memberForm.controls['artist'].touched}" > *This is required
+                                        </span>
+                                    </div>
+                                    <select [formControl]="memberForm.controls['artist']" name="artist" id="artist" class="form-control">
+                                        <option value="{{artist.id}}" *ngFor="let artist of artists">{{artist.name}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-field">
+                                    <div>
+                                        <strong>DP </strong>   
+                                        <span class="text-error text-danger"
+                                             [ngClass]="{'has-error':!memberForm.controls['dp'].valid && memberForm.controls['dp'].touched}" > *This is required
+                                        </span>
+                                    </div>
+                                    <select [formControl]="memberForm.controls['dp']" name="dp" id="dp" class="form-control">
+                                        <option value="{{dp.id}}" *ngFor="let dp of dps">{{dp.name}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-field">
+                                    <div>
+                                        <strong>QA </strong>
+                                        <span class="text-error text-danger"
+                                              [ngClass]="{'has-error':!memberForm.controls['qa'].valid && memberForm.controls['qa'].touched}" > *This is required
+                                        </span>
+                                    </div>
+                                    <select [formControl]="memberForm.controls['qa']"  name="qa" id="qa" class="form-control">
+                                        <option value="{{qa.id}}" *ngFor="let qa of qas">{{qa.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-custom">Submit</button>
+                                <button type="button" class="btn btn-custom"  (click)="members_modal.hide()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+              </div>
